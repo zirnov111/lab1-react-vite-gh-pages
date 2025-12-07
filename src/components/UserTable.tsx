@@ -41,34 +41,26 @@ export default function UserTable() {
     }
   };
 
- 
   const cities = Array.from(new Set(users.map(user => user.address.city)));
 
- 
   const filteredUsers = users.filter(
     user => !cityFilter || user.address.city === cityFilter
   );
 
-  
-  const noResults = search.length >= 3 && filteredUsers.length === 0;
+  const noResults = filteredUsers.length === 0;
 
- 
   const handleResetFilter = () => {
     setCityFilter('');
   };
 
   return (
     <div>
-     
       <button onClick={fetchUsers} disabled={loading}>
         {loading ? 'Загрузка...' : 'Загрузить пользователей'}
       </button>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-     
-
-     
       {users.length > 0 && (
         <div style={{ marginTop: '10px' }}>
           <label>
@@ -90,7 +82,6 @@ export default function UserTable() {
         </div>
       )}
 
-     
       {users.length > 0 && (
         <>
           {noResults ? (
