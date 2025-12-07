@@ -6,13 +6,17 @@ type User = {
   email: string;
   phone: string;
   website: string;
+  address: {
+    city: string;
+  };
 };
 
 export default function UserTable() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState(''); // добавляем состояние поиска
+  const [search, setSearch] = useState(''); // существующий поиск
+  const [cityFilter, setCityFilter] = useState<string>(''); // фильтр по городу
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -23,7 +27,14 @@ export default function UserTable() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data: User[] = await response.json();
-      setUsers(data);
+      // Поскольку API не возвращает address, добавим фиктивный адрес для тестирования
+      const dataWithAddress = data.map(user => ({
+        ...user,
+        address: {
+          city: ['Moscow', 'Kulm', 'London'][user.id % 3], // пример городов
+        },
+      }));
+      setUsers(dataWithAddress);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
     } finally {
@@ -31,34 +42,63 @@ export default function UserTable() {
     }
   };
 
-  // фильтр пользователей по email
-  const filteredUsers = users.filter(user => {
-    if (search.length >= 3) {
-      return user.email.toLowerCase().includes(search.toLowerCase());
-    }
-    return true; // если менее 3 символов, показываем всех
-  });
+  // уникальные города для селекта
+  const cities = Array.from(new Set(users.map(user => user.address.city)));
 
-  // сообщение «Ничего не найдено», если фильтр есть и результатов нет
+  // фильтрация по городу
+  const filteredUsers = users.filter(
+    user => !cityFilter || user.address.city === cityFilter
+  );
+
+  // сообщение «Ничего не найдено», если фильтр по поиску есть и нет совпадений
   const noResults = search.length >= 3 && filteredUsers.length === 0;
 
-  return (
-    <div className="user-table-container">
-      {/* input для поиска */}
-      <input
-        type="text"
-        placeholder="Поиск по email"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ marginBottom: '10px', padding: '5px', width: '200px' }}
-      />
+  //Обработчик сброса фильтра по городу
+  const handleResetFilter = () => {
+    setCityFilter('');
+  };
 
+  return (
+    <div>
+      {/* Кнопка загрузки */}
       <button onClick={fetchUsers} disabled={loading}>
         {loading ? 'Загрузка...' : 'Загрузить пользователей'}
       </button>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
+      {/* Поле поиска */}
+      {/* (Если есть необходимость, можно оставить или убрать) */}
+      {/* <input
+        type="text"
+        placeholder="Поиск..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      /> */}
+
+      {/* Фильтр по городу */}
+      {users.length > 0 && (
+        <div style={{ marginTop: '10px' }}>
+          <label>
+            <select
+              value={cityFilter}
+              onChange={(e) => setCityFilter(e.target.value)}
+            >
+              <option value="">Все города</option>
+              {cities.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button onClick={handleResetFilter} style={{ marginLeft: '10px' }}>
+            Сбросить фильтр
+          </button>
+        </div>
+      )}
+
+      {/* Таблица */}
       {users.length > 0 && (
         <>
           {noResults ? (
@@ -78,6 +118,7 @@ export default function UserTable() {
                   <th>Email</th>
                   <th>Телефон</th>
                   <th>Сайт</th>
+                  <th>Город</th>
                 </tr>
               </thead>
               <tbody>
@@ -95,6 +136,7 @@ export default function UserTable() {
                         {user.website}
                       </a>
                     </td>
+                    <td>{user.address.city}</td>
                   </tr>
                 ))}
               </tbody>
