@@ -2,8 +2,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import UserTable from './UserTable';
 import { vi } from 'vitest';
 
+// Замена global.fetch на window.fetch
 beforeEach(() => {
-  global.fetch = vi.fn(() =>
+  // @ts-ignore
+  window.fetch = vi.fn(() =>
     Promise.resolve({
       ok: true,
       json: () =>
