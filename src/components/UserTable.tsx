@@ -15,7 +15,6 @@ export default function UserTable() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState(''); 
   const [cityFilter, setCityFilter] = useState<string>(''); 
 
   const fetchUsers = async () => {
