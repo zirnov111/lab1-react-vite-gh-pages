@@ -1,0 +1,11 @@
+{
+  "name": "lab1-react-vite-gh-pages",
+  "homepage": "https://zirnov111.github.io/lab1-react-vite-gh-pages",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  }
+}
