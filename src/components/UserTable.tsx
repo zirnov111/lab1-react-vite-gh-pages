@@ -15,8 +15,8 @@ export default function UserTable() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState(''); // существующий поиск
-  const [cityFilter, setCityFilter] = useState<string>(''); // фильтр по городу
+  const [search, setSearch] = useState(''); 
+  const [cityFilter, setCityFilter] = useState<string>(''); 
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -27,11 +27,11 @@ export default function UserTable() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data: User[] = await response.json();
-      // Поскольку API не возвращает address, добавим фиктивный адрес для тестирования
+      
       const dataWithAddress = data.map(user => ({
         ...user,
         address: {
-          city: ['Moscow', 'Kulm', 'London'][user.id % 3], // пример городов
+          city: ['Moscow', 'Kulm', 'London'][user.id % 3], 
         },
       }));
       setUsers(dataWithAddress);
@@ -42,41 +42,34 @@ export default function UserTable() {
     }
   };
 
-  // уникальные города для селекта
+ 
   const cities = Array.from(new Set(users.map(user => user.address.city)));
 
-  // фильтрация по городу
+ 
   const filteredUsers = users.filter(
     user => !cityFilter || user.address.city === cityFilter
   );
 
-  // сообщение «Ничего не найдено», если фильтр по поиску есть и нет совпадений
+  
   const noResults = search.length >= 3 && filteredUsers.length === 0;
 
-  //Обработчик сброса фильтра по городу
+ 
   const handleResetFilter = () => {
     setCityFilter('');
   };
 
   return (
     <div>
-      {/* Кнопка загрузки */}
+     
       <button onClick={fetchUsers} disabled={loading}>
         {loading ? 'Загрузка...' : 'Загрузить пользователей'}
       </button>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {/* Поле поиска */}
-      {/* (Если есть необходимость, можно оставить или убрать) */}
-      {/* <input
-        type="text"
-        placeholder="Поиск..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      /> */}
+     
 
-      {/* Фильтр по городу */}
+     
       {users.length > 0 && (
         <div style={{ marginTop: '10px' }}>
           <label>
@@ -98,7 +91,7 @@ export default function UserTable() {
         </div>
       )}
 
-      {/* Таблица */}
+     
       {users.length > 0 && (
         <>
           {noResults ? (
